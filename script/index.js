@@ -1,4 +1,3 @@
-// Botón Start
 const buttonStart = document.querySelector(".start-button");
 buttonStart.addEventListener("click", () => {
   window.location.href = "game.html";
@@ -50,17 +49,17 @@ document.addEventListener("DOMContentLoaded", () => {
   // Ajustar volumen
   volumeSlider.addEventListener("input", (e) => {
     console.log("Volumen:", e.target.value);
-    // Aquí puedes controlar tu audio real si lo agregas
+    
   });
 
-  // Guardar controles
+ 
   saveControlsBtn.addEventListener("click", () => {
     controls.jump = controlInputs[0].value.toUpperCase() || "SPACE";
     controls.potion = controlInputs[1].value.toUpperCase() || "E";
     controls.attack = controlInputs[2].value.toUpperCase() || "F";
   });
 
-  // Listener de teclado para el juego
+  
   document.addEventListener("keydown", (e) => {
     switch (e.key.toUpperCase()) {
       case controls.jump:
