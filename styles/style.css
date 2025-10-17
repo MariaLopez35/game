@@ -3,11 +3,55 @@
     padding: 0;
 }
 
+html, body {
+    height: 100%;
+}
+
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .container{
-    width: 1000px;
-    height: 500px;
-    background-image: url("../images/geralt.png");
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 50px;
+    width: 2000px;
+    height: 940px;
+    background-image: url("../assets/images/geralt.png");
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
+}
+
+button {
+  background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+  color: #f0a500;
+  border: 3px solid #f0a500;
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding: 18px 60px;
+  border-radius: 14px;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(240, 165, 0, 0.4),
+              inset 0 0 15px rgba(240, 165, 0, 0.3);
+  text-shadow: 0 0 12px rgba(240, 165, 0, 0.7);
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background: linear-gradient(145deg, #3a2a00, #1e1200);
+  color: #fff4cc;
+  border-color: #ffae00;
+  box-shadow: 0 0 35px rgba(255, 174, 0, 0.8),
+              inset 0 0 20px rgba(255, 174, 0, 0.5);
+  transform: scale(1.08);
+}
+
+button:active {
+  transform: scale(0.96);
+  box-shadow: 0 0 15px rgba(255, 174, 0, 0.5);
 }
