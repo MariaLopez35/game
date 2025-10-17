@@ -55,3 +55,115 @@ button:active {
   transform: scale(0.96);
   box-shadow: 0 0 15px rgba(255, 174, 0, 0.5);
 }
+
+.hidden {
+  display: none !important;
+}
+
+.options-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.options-content {
+  background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+  border: 3px solid #f0a500;
+  border-radius: 14px;
+  padding: 30px 25px;
+  width: 350px;
+  text-align: center;
+  color: #f0a500;
+  box-shadow: 0 0 30px rgba(240, 165, 0, 0.5),
+              inset 0 0 20px rgba(240, 165, 0, 0.3);
+}
+
+.options-content h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  text-shadow: 0 0 12px rgba(240, 165, 0, 0.7);
+}
+
+.options-content button {
+  background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+  color: #f0a500;
+  border: 3px solid #f0a500;
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 12px 35px;
+  border-radius: 14px;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(240, 165, 0, 0.4),
+              inset 0 0 15px rgba(240, 165, 0, 0.3);
+  text-shadow: 0 0 10px rgba(240, 165, 0, 0.6);
+  transition: all 0.3s ease;
+  margin: 8px;
+}
+
+.options-content button:hover {
+  background: linear-gradient(145deg, #3a2a00, #1e1200);
+  color: #fff4cc;
+  border-color: #ffae00;
+  box-shadow: 0 0 35px rgba(255, 174, 0, 0.8),
+              inset 0 0 20px rgba(255, 174, 0, 0.5);
+  transform: scale(1.05);
+}
+
+.options-content button:active {
+  transform: scale(0.96);
+  box-shadow: 0 0 15px rgba(255, 174, 0, 0.5);
+}
+
+.sound-settings input[type="range"] {
+  width: 80%;
+  margin-top: 10px;
+}
+
+.controls-settings input[type="text"] {
+  width: 60px;
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+.controls-settings {
+  margin-top: 15px;
+}
+
+.control-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 8px 0;
+}
+
+.control-row label {
+  font-weight: bold;
+  color: #f0a500;
+  text-shadow: 0 0 8px rgba(240,165,0,0.7);
+}
+
+.control-input {
+  width: 80px; /* un poco más ancho para teclas como SPACE */
+  padding: 5px 8px;
+  border-radius: 8px;
+  border: 2px solid #f0a500;
+  background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+  color: #f0a500;
+  text-align: center;
+  font-weight: bold;
+  box-shadow: 0 0 10px rgba(240,165,0,0.3), inset 0 0 5px rgba(240,165,0,0.2);
+  transition: all 0.3s ease;
+}
+
+.control-input:focus {
+  outline: none;
+  border-color: #ffae00;
+  box-shadow: 0 0 15px rgba(255,174,0,0.7), inset 0 0 8px rgba(255,174,0,0.4);
+}

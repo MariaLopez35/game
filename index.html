@@ -1,20 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="./styles/style.css" />
-    <title>Game</title>
-  </head>
-  <body>
-    <div class="container">
-      <button class="start-button">Start</button>
-      <button>Options</button>
-    </div>
-    
-    <!--<audio class="audio" src="./assets/audio/Lament_for_a_Warriors_Soul.mp3" autoplay loop muted></audio>-->
-    
 
-    <script src="./script/index.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="./styles/style.css" />
+  <title>Game</title>
+</head>
+
+<body>
+  <div class="container">
+    <button class="start-button">Start</button>
+    <button class="options-button">Options</button>
+  </div>
+
+  <div class="options-modal hidden">
+    <div class="options-content">
+      <h2>Opciones</h2>
+      <button class="sound-btn">Sonido</button>
+      <button class="controls-btn">Controles</button>
+      <button class="close-btn">Cerrar</button>
+
+      <div class="sound-settings hidden">
+        <label for="volume">Volumen:</label>
+        <input type="range" class="volume-slider" min="0" max="100" value="50">
+      </div>
+
+      <div class="controls-settings hidden">
+        <p>Configura tus controles:</p>
+        <div class="control-row">
+          <label for="jump">Saltar:</label>
+          <input type="text" class="control-input" value="SPACE">
+        </div>
+        <div class="control-row">
+          <label for="potion">Tomar poción:</label>
+          <input type="text" class="control-input" value="E">
+        </div>
+        <div class="control-row">
+          <label for="attack">Atacar:</label>
+          <input type="text" class="control-input" value="F">
+        </div>
+        <button class="save-controls-btn">Guardar controles</button>
+      </div>
+
+
+    </div>
+  </div>
+
+
+
+
+
+  <!--<audio class="audio" src="./assets/audio/Lament_for_a_Warriors_Soul.mp3" autoplay loop muted></audio>-->
+
+
+  <script src="./script/index.js"></script>
+</body>
+
 </html>
