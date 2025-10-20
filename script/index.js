@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeButton = document.querySelector(".close-btn");
 
   const soundBtn = document.querySelector(".sound-btn");
-  const controlsBtn = document.querySelector(".controls-btn");
+  const controlsButton = document.querySelector(".controls-btn");
   const soundSettings = document.querySelector(".sound-settings");
   const controlsSettings = document.querySelector(".controls-settings");
 
@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
   );
   const saveControlsBtn = document.querySelector(".save-controls-btn");
 
-  let controls = {
+  const controls = {
     jump: "SPACE",
     potion: "E",
     attack: "F",
@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
     controlsSettings.classList.add("hidden");
   });
 
-  controlsBtn.addEventListener("click", () => {
+  controlsButton.addEventListener("click", () => {
     controlsSettings.classList.remove("hidden");
     soundSettings.classList.add("hidden");
   });
@@ -49,25 +49,12 @@ document.addEventListener("DOMContentLoaded", () => {
   // Ajustar volumen
   volumeSlider.addEventListener("input", (e) => {
     console.log("Volumen:", e.target.value);
-    
   });
 
- 
   saveControlsBtn.addEventListener("click", () => {
     controls.jump = controlInputs[0].value.toUpperCase() || "SPACE";
     controls.potion = controlInputs[1].value.toUpperCase() || "E";
     controls.attack = controlInputs[2].value.toUpperCase() || "F";
   });
-
   
-  document.addEventListener("keydown", (e) => {
-    switch (e.key.toUpperCase()) {
-      case controls.jump:
-        break;
-      case controls.potion:
-        break;
-      case controls.attack:
-        break;
-    }
-  });
 });
