@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="./styles/style-principal.css" />
+    <link rel="stylesheet" href="../styles/reset.css">
+    <link rel="stylesheet" href="index.css" />
     <title>Game</title>
   </head>
 
@@ -35,23 +36,21 @@
           <p>Configura tus controles:</p>
           <div class="control-row">
             <label for="jump">Saltar:</label>
-            <input type="text" class="control-input" value="SPACE" />
+            <input type="text" class="control-input jump"/>
           </div>
           <div class="control-row">
             <label for="potion">Tomar poción:</label>
-            <input type="text" class="control-input" value="E" />
+            <input type="text" class="control-input potion"/>
           </div>
           <div class="control-row">
             <label for="attack">Atacar:</label>
-            <input type="text" class="control-input" value="F" />
+            <input type="text" class="control-input attack"/>
           </div>
           <button class="save-controls-btn">Guardar controles</button>
         </div>
       </div>
     </div>
 
-    <!--<audio class="audio" src="./assets/audio/Lament_for_a_Warriors_Soul.mp3" autoplay loop muted></audio>-->
-
-    <script src="./script/index.js"></script>
+    <script src="index.js"></script>
   </body>
 </html>
