@@ -1,9 +1,12 @@
 const canvas = document.querySelector("canvas");
 const context = canvas.getContext("2d");
 
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
 let x = 0;
-let y = 0;
-const size = 100;
+let y = 700;
+const size = 192;
 const speed = 5;
 
 const keys = {
@@ -11,8 +14,8 @@ const keys = {
   ArrowLeft: false
 };
 
-const sprite = new Image();
-sprite.src = "../assets/images/sprites-geralt.png";
+const sprite = document.createElement("img");
+sprite.src = "../assets/images/sprite-geralt.png";
 
 function update() {
   if (keys.ArrowRight) {
