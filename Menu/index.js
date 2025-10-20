@@ -1,6 +1,6 @@
-const buttonStart = document.querySelector(".start-button");
-buttonStart.addEventListener("click", () => {
-  window.location.href = "game.html";
+const startButton = document.querySelector(".start-button");
+startButton.addEventListener("click", () => {
+  window.location.href = "/Game/game.html";
 });
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -13,8 +13,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const soundSettings = document.querySelector(".sound-settings");
   const controlsSettings = document.querySelector(".controls-settings");
 
-  const volumeSlider = document.querySelector(".volume-slider");
-
   const controlInputs = document.querySelectorAll(
     ".controls-settings .control-input"
   );
@@ -22,9 +20,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const controls = {
     jump: "SPACE",
-    potion: "E",
-    attack: "F",
+    potion: "G",
+    attack: "H",
   };
+
+  const jump = document.querySelector(".jump");
+  const potion = document.querySelector(".potion");
+  const attack = document.querySelector(".attack");
+
+  jump.setAttribute("value", controls.jump);
+  potion.setAttribute("value", controls.potion);
+  attack.setAttribute("value", controls.attack);
 
   optionsButton.addEventListener("click", () => {
     modal.classList.remove("hidden");
@@ -46,15 +52,9 @@ document.addEventListener("DOMContentLoaded", () => {
     soundSettings.classList.add("hidden");
   });
 
-  // Ajustar volumen
-  volumeSlider.addEventListener("input", (e) => {
-    console.log("Volumen:", e.target.value);
-  });
-
   saveControlsBtn.addEventListener("click", () => {
-    controls.jump = controlInputs[0].value.toUpperCase() || "SPACE";
-    controls.potion = controlInputs[1].value.toUpperCase() || "E";
-    controls.attack = controlInputs[2].value.toUpperCase() || "F";
+    controls.jump = controlInputs[0].value.toUpperCase() || controls.jump;
+    controls.potion = controlInputs[1].value.toUpperCase() || controls.potion;
+    controls.attack = controlInputs[2].value.toUpperCase() || controls.attack;
   });
-  
 });
