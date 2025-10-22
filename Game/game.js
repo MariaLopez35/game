@@ -6,13 +6,14 @@ canvas.height = window.innerHeight;
 
 const playerSize = 192;
 const playerSpeed = 5;
+const groundOffset = 120;
+const groundLevel = canvas.height - playerSize - groundOffset;
 let playerX = 0;
-let playerY = canvas.height - playerSize;
-let velocityY = 0;      
-const gravity = 0.8;     
-const jumpSpeed = -25 ;   
-let isOnGround = true; 
-   
+let playerY = groundLevel;
+let velocityY = 0;
+const gravity = 0.8;
+const jumpSpeed = -20;
+let isOnGround = false;
 
 const keys = {
   ArrowRight: false,
@@ -59,22 +60,40 @@ function countPotions() {
 }
 
 function jump() {
- 
   if (isOnGround && keys.Space) {
     velocityY = jumpSpeed;
     isOnGround = false;
   }
-  
+
   velocityY += gravity;
   playerY += velocityY;
- 
-  if (playerY > canvas.height - playerSize) {
-    playerY = canvas.height - playerSize;
+
+  if (playerY > groundLevel) {
+    playerY = groundLevel;
     velocityY = 0;
     isOnGround = true;
   }
 }
 
+function drawFloor() {
+  let floorX = 0;
+  let floorY = 0;
+  const floorSizeX = canvas.width;
+  const floorSizeY = canvas.height;
+  const floor = document.createElement("img");
+  floor.src = "../assets/images/escenario.jpg";
+  context.drawImage(floor, floorX, floorY, floorSizeX, floorSizeY);
+}
+
+function drawEnemy() {
+  const enemyX = 1200;
+  const enemyY = groundLevel;
+  const enemySize = 196;
+
+  const enemy = document.createElement("img");
+  enemy.src = "../assets/images/enemy.png";
+  context.drawImage(enemy, enemyX, enemyY, enemySize, enemySize);
+}
 
 function update() {
   if (keys.ArrowRight) {
@@ -87,40 +106,41 @@ function update() {
   jump();
 
   context.clearRect(0, 0, canvas.width, canvas.height);
+  drawFloor();
   healthBar();
   countPotions();
+  drawEnemy();
   context.drawImage(sprite, playerX, playerY, playerSize, playerSize);
-  
+
   requestAnimationFrame(update);
 }
 
 window.addEventListener("keydown", (event) => {
-
-  if (event.code === "ArrowRight"){
+  if (event.code === "ArrowRight") {
     keys.ArrowRight = true;
-  } 
+  }
 
-  if (event.code === "ArrowLeft"){
+  if (event.code === "ArrowLeft") {
     keys.ArrowLeft = true;
-  } 
+  }
 
-  if (event.code === "Space"){
-    keys.Space = true
-  } ;
+  if (event.code === "Space") {
+    keys.Space = true;
+  }
 });
 
 window.addEventListener("keyup", (event) => {
-  if (event.code === "ArrowRight"){
+  if (event.code === "ArrowRight") {
     keys.ArrowRight = false;
-  } 
+  }
 
-  if (event.code === "ArrowLeft"){
+  if (event.code === "ArrowLeft") {
     keys.ArrowLeft = false;
-  } 
+  }
 
-  if (event.code === "Space"){
+  if (event.code === "Space") {
     keys.Space = false;
-  } 
+  }
 });
 
 update();
