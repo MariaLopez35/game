@@ -14,6 +14,12 @@ let velocityY = 0;
 const gravity = 0.8;
 const jumpSpeed = -20;
 let isOnGround = false;
+let enemyX = 1200;
+let enemyY = groundLevel;
+const enemySize = 196;
+const limitRight = 1400;
+const limitLeft = 1100;
+let velocity = 2;
 
 const keys = {
   ArrowRight: false,
@@ -86,13 +92,21 @@ function drawFloor() {
 }
 
 function drawEnemy() {
-  const enemyX = 1200;
-  const enemyY = groundLevel;
-  const enemySize = 196;
-
   const enemy = document.createElement("img");
   enemy.src = "../assets/images/enemy.png";
   context.drawImage(enemy, enemyX, enemyY, enemySize, enemySize);
+
+  enemyX += velocity;
+
+  if (enemyX > limitRight) {
+    enemyX = limitRight;
+    velocity = -velocity;
+  }
+
+  if (enemyX < limitLeft) {
+    enemyX = limitLeft;
+    velocity = -velocity;
+  }
 }
 
 function update() {
