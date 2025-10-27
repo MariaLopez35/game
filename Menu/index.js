@@ -1,6 +1,6 @@
 const startButton = document.querySelector(".start-button");
 startButton.addEventListener("click", () => {
-  window.location.href = "/Game/game.html";
+  window.location.href = "../Game/game.html";
 });
 
 document.addEventListener("DOMContentLoaded", () => {
