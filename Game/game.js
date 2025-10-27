@@ -176,14 +176,39 @@ const platform = () => {
     player.x < platformX + platformWidth - range &&
     player.x + player.w - range > platformX &&
     player.y + player.h > platformY &&
-    player.y + player.h < platformY + platformHeight && 
+    player.y + player.h < platformY + platformHeight &&
     velocityY >= 0
   ) {
-    player.y = platformY - player.h + PLATFORM_OFFSET_Y; 
-    velocityY = 0; 
-    isOnGround = true; 
+    player.y = platformY - player.h + PLATFORM_OFFSET_Y;
+    velocityY = 0;
+    isOnGround = true;
   }
 };
+
+let isPotionVisible = true;
+
+const collectPotions = () => {
+
+  
+  let potionsX = 780;
+  let potionsY = 500;
+  const potionsSize = 90;
+  const potions = document.createElement("img");
+  potions.src = "../assets/images/potion.png";
+
+  if (isPotionVisible) {
+    context.drawImage(potions, potionsX, potionsY, potionsSize, potionsSize);
+
+    if (
+      player.x < potionsX + potionsSize &&
+      player.x + player.w > potionsX &&
+      player.y < potionsY + potionsSize &&
+      player.y + player.h > potionsY
+    ) {
+      isPotionVisible = false;
+    }
+  }
+}
 
 function update() {
   const sprite = document.createElement("img");
@@ -201,6 +226,7 @@ function update() {
   context.clearRect(0, 0, canvas.width, canvas.height);
   drawEscenary();
   platform();
+  collectPotions()
   drawHealthBar();
   countPotions();
   drawEnemy();
