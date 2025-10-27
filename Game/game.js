@@ -4,13 +4,17 @@ const context = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-const playerWidth = 192;
-const playerHeight = 192;
+const player = {
+  x: 0,
+  y: 0,
+  w: 192,
+  h: 192,
+};
+
 const playerSpeed = 5;
 const groundOffset = 120;
-const groundLevel = canvas.height - playerHeight - groundOffset;
-let playerX = 0;
-let playerY = groundLevel;
+const groundLevel = canvas.height - player.h - groundOffset;
+player.y = groundLevel;
 let velocityY = 0;
 const gravity = 0.8;
 const jumpSpeed = -20;
@@ -33,7 +37,7 @@ const keys = {
   KeyN: false,
 };
 
-const healthBar = () => {
+const drawHealthBar = () => {
   let healthBarX = 1690;
   let healthBarY = 30;
   const healthBarWidth = 200;
@@ -42,7 +46,7 @@ const healthBar = () => {
   let heartY = 22;
   const heartSize = 25;
   const heart = document.createElement("img");
-  heart.src = "../assets/images/corazon.png";
+  heart.src = "../assets/images/heart.png";
 
   context.drawImage(heart, heartX, heartY, heartSize, heartSize);
   context.fillStyle = "green";
@@ -56,7 +60,7 @@ const countPotions = () => {
   let potionCount = 3;
   const padding = 12;
   const potions = document.createElement("img");
-  potions.src = "../assets/images/pocion.png";
+  potions.src = "../assets/images/potion.png";
   context.drawImage(potions, potionsX, potionsY, potionsSize, potionsSize);
 
   context.font = "30px Arial";
@@ -75,22 +79,22 @@ const jump = () => {
   }
 
   velocityY += gravity;
-  playerY += velocityY;
+  player.y += velocityY;
 
-  if (playerY > groundLevel) {
-    playerY = groundLevel;
+  if (player.y > groundLevel) {
+    player.y = groundLevel;
     velocityY = 0;
     isOnGround = true;
   }
 };
 
-const drawFloor = () => {
+const drawEscenary = () => {
   let floorX = 0;
   let floorY = 0;
   const floorSizeX = canvas.width;
   const floorSizeY = canvas.height;
   const floor = document.createElement("img");
-  floor.src = "../assets/images/escenario.jpg";
+  floor.src = "../assets/images/stage.jpg";
   context.drawImage(floor, floorX, floorY, floorSizeX, floorSizeY);
 };
 
@@ -117,26 +121,27 @@ const drawEnemy = () => {
   }
 };
 
-const collision = () => {
-  // Los IF siempre con {}
-  if (!isVisible){
+const attackEnemy = () => {
+  const numberOfTimes = 3;
+
+  if (!isVisible) {
     return;
-  } 
+  }
 
   if (
-    playerX < enemyX + enemyWidth &&
-    playerX + playerWidth > enemyX &&
-    playerY < enemyY + enemyHeight &&
-    playerX + playerHeight > enemyY
+    player.x < enemyX + enemyWidth &&
+    player.x + player.w > enemyX &&
+    player.y < enemyY + enemyHeight &&
+    player.x + player.h > enemyY
   ) {
-    playerX = enemyX - enemyWidth;
+    player.x = enemyX - enemyWidth;
 
     if (keys.KeyN && pressN) {
       pressKey++;
       pressN = false;
     }
-// Magic Number
-    if (pressKey === 3) {
+
+    if (pressKey === numberOfTimes) {
       isVisible = false;
       pressKey = 0;
     }
@@ -147,74 +152,70 @@ const collision = () => {
   }
 };
 
-const platform = () =>{
-
+const platform = () => {
   const platform = document.createElement("img");
-// Imagenes en ingles
-  platform.src = "../assets/images/plataforma.png";
-  
-}
+
+  platform.src = "../assets/images/platform.png";
+
+  let platformX = 500;
+  let platformY = 500;
+  const platformWidth = 500;
+  const platformHeight = 150;
+  const range = 150;
+  const PLATFORM_OFFSET_Y = 98;
+
+  context.drawImage(
+    platform,
+    platformX,
+    platformY,
+    platformWidth,
+    platformHeight
+  );
+
+  if (
+    player.x < platformX + platformWidth - range &&
+    player.x + player.w - range > platformX &&
+    player.y + player.h > platformY &&
+    player.y + player.h < platformY + platformHeight && 
+    velocityY >= 0
+  ) {
+    player.y = platformY - player.h + PLATFORM_OFFSET_Y; 
+    velocityY = 0; 
+    isOnGround = true; 
+  }
+};
 
 function update() {
   const sprite = document.createElement("img");
   sprite.src = "../assets/images/sprite-geralt.png";
 
   if (keys.ArrowRight) {
-    playerX += playerSpeed;
+    player.x += playerSpeed;
   }
   if (keys.ArrowLeft) {
-    playerX -= playerSpeed;
+    player.x -= playerSpeed;
   }
 
   jump();
 
   context.clearRect(0, 0, canvas.width, canvas.height);
-  drawFloor();
-  healthBar();
+  drawEscenary();
+  platform();
+  drawHealthBar();
   countPotions();
   drawEnemy();
-  collision();
-  context.drawImage(sprite, playerX, playerY, playerWidth, playerHeight);
+  attackEnemy();
+  context.drawImage(sprite, player.x, player.y, player.w, player.h);
 
   requestAnimationFrame(update);
 }
 
 window.addEventListener("keydown", (event) => {
-
- //  keys[event.code] === true
-
-  if (event.code === "ArrowRight") {
-    keys.ArrowRight = true;
-  }
-
-  if (event.code === "ArrowLeft") {
-    keys.ArrowLeft = true;
-  }
-
-  if (event.code === "Space") {
-    keys.Space = true;
-  }
-  if (event.code === "KeyN") {
-    keys.KeyN = true;
-  }
+  keys[event.code] = true;
 });
 
 window.addEventListener("keyup", (event) => {
-  //  keys[event.code] === true
-  if (event.code === "ArrowRight") {
-    keys.ArrowRight = false;
-  }
-
-  if (event.code === "ArrowLeft") {
-    keys.ArrowLeft = false;
-  }
-
-  if (event.code === "Space") {
-    keys.Space = false;
-  }
-  if (event.code === "KeyN") {
-    keys.KeyN = false;
-  }
+  keys[event.code] = false;
 });
 
 update();
