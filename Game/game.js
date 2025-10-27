@@ -26,15 +26,12 @@ let pressKey = 0;
 let isVisible = true;
 let pressN = true;
 
-
-
 const keys = {
   ArrowRight: false,
   ArrowLeft: false,
   Space: false,
-  KeyN: false
+  KeyN: false,
 };
-
 
 const healthBar = () => {
   let healthBarX = 1690;
@@ -100,11 +97,11 @@ const drawFloor = () => {
 const drawEnemy = () => {
   const enemy = document.createElement("img");
   enemy.src = "../assets/images/enemy.png";
-  
+
   if (isVisible) {
     context.drawImage(enemy, enemyX, enemyY, enemyWidth, enemyHeight);
-  }else{
-    return
+  } else {
+    return;
   }
 
   enemyX += velocity;
@@ -120,10 +117,11 @@ const drawEnemy = () => {
   }
 };
 
-
 const collision = () => {
-
-  if(!isVisible) return ;
+  // Los IF siempre con {}
+  if (!isVisible){
+    return;
+  } 
 
   if (
     playerX < enemyX + enemyWidth &&
@@ -131,16 +129,15 @@ const collision = () => {
     playerY < enemyY + enemyHeight &&
     playerX + playerHeight > enemyY
   ) {
-
-    playerX = enemyX - enemyWidth
+    playerX = enemyX - enemyWidth;
 
     if (keys.KeyN && pressN) {
       pressKey++;
-      pressN = false
+      pressN = false;
     }
-
+// Magic Number
     if (pressKey === 3) {
-      isVisible = false;      
+      isVisible = false;
       pressKey = 0;
     }
   }
@@ -148,11 +145,17 @@ const collision = () => {
   if (!keys.KeyN) {
     pressN = true;
   }
-
 };
 
-function update() {
+const platform = () =>{
 
+  const platform = document.createElement("img");
+// Imagenes en ingles
+  platform.src = "../assets/images/plataforma.png";
+  
+}
+
+function update() {
   const sprite = document.createElement("img");
   sprite.src = "../assets/images/sprite-geralt.png";
 
@@ -162,8 +165,6 @@ function update() {
   if (keys.ArrowLeft) {
     playerX -= playerSpeed;
   }
-
-
 
   jump();
 
@@ -179,6 +180,8 @@ function update() {
 }
 
 window.addEventListener("keydown", (event) => {
+
+ //  keys[event.code] === true
 
   if (event.code === "ArrowRight") {
     keys.ArrowRight = true;
@@ -197,8 +200,7 @@ window.addEventListener("keydown", (event) => {
 });
 
 window.addEventListener("keyup", (event) => {
-
-
+  //  keys[event.code] === true
   if (event.code === "ArrowRight") {
     keys.ArrowRight = false;
   }
