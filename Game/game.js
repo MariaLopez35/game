@@ -7,13 +7,13 @@ canvas.height = window.innerHeight;
 const player = {
   x: 0,
   y: 0,
-  w: 192,
-  h: 192,
+  width: 192,
+  height: 192,
 };
 
 const playerSpeed = 5;
 const groundOffset = 120;
-const groundLevel = canvas.height - player.h - groundOffset;
+const groundLevel = canvas.height - player.height - groundOffset;
 player.y = groundLevel;
 let velocityY = 0;
 const gravity = 0.8;
@@ -29,6 +29,9 @@ let velocity = 2;
 let pressKey = 0;
 let isVisible = true;
 let pressN = true;
+let isPotionVisible = true;
+let potionCount = 3;
+
 
 const keys = {
   ArrowRight: false,
@@ -57,7 +60,6 @@ const countPotions = () => {
   let potionsX = 1790;
   let potionsY = 60;
   const potionsSize = 50;
-  let potionCount = 3;
   const padding = 12;
   const potions = document.createElement("img");
   potions.src = "../assets/images/potion.png";
@@ -130,9 +132,9 @@ const attackEnemy = () => {
 
   if (
     player.x < enemyX + enemyWidth &&
-    player.x + player.w > enemyX &&
+    player.x + player.width > enemyX &&
     player.y < enemyY + enemyHeight &&
-    player.x + player.h > enemyY
+    player.x + player.height > enemyY
   ) {
     player.x = enemyX - enemyWidth;
 
@@ -174,22 +176,18 @@ const platform = () => {
 
   if (
     player.x < platformX + platformWidth - range &&
-    player.x + player.w - range > platformX &&
-    player.y + player.h > platformY &&
-    player.y + player.h < platformY + platformHeight &&
+    player.x + player.width - range > platformX &&
+    player.y + player.height > platformY &&
+    player.y + player.height < platformY + platformHeight &&
     velocityY >= 0
   ) {
-    player.y = platformY - player.h + PLATFORM_OFFSET_Y;
+    player.y = platformY - player.height + PLATFORM_OFFSET_Y;
     velocityY = 0;
     isOnGround = true;
   }
 };
 
-let isPotionVisible = true;
-
 const collectPotions = () => {
-
-  
   let potionsX = 780;
   let potionsY = 500;
   const potionsSize = 90;
@@ -201,14 +199,15 @@ const collectPotions = () => {
 
     if (
       player.x < potionsX + potionsSize &&
-      player.x + player.w > potionsX &&
+      player.x + player.width > potionsX &&
       player.y < potionsY + potionsSize &&
-      player.y + player.h > potionsY
+      player.y + player.height > potionsY
     ) {
       isPotionVisible = false;
+      potionCount++;
     }
   }
-}
+};
 
 function update() {
   const sprite = document.createElement("img");
@@ -226,12 +225,16 @@ function update() {
   context.clearRect(0, 0, canvas.width, canvas.height);
   drawEscenary();
   platform();
-  collectPotions()
+  collectPotions();
   drawHealthBar();
   countPotions();
   drawEnemy();
   attackEnemy();
-  context.drawImage(sprite, player.x, player.y, player.w, player.h);
+  context.drawImage(sprite, player.x, player.y, player.width, player.height);
+
+   if (player.x + player.width > canvas.width) {
+    player.x = 0
+  }
 
   requestAnimationFrame(update);
 }
@@ -245,3 +248,4 @@ window.addEventListener("keyup", (event) => {
 });
 
 update();
+
