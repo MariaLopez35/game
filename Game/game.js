@@ -23,15 +23,19 @@ let enemyX = 1200;
 let enemyY = groundLevel;
 const enemyWidth = 196;
 const enemyHeight = 196;
-const limitRight = 1400;
-const limitLeft = 1100;
+let limitRight = 1400;
+let limitLeft = 1100;
 let velocity = 2;
+let platformX = 500;
+let platformY = 500;
+const platformWidth = 500;
+const platformHeight = 150;
 let pressKey = 0;
 let isVisible = true;
 let pressN = true;
 let isPotionVisible = true;
 let potionCount = 3;
-
+let currentLevel = 1;
 
 const keys = {
   ArrowRight: false,
@@ -96,8 +100,15 @@ const drawEscenary = () => {
   const floorSizeX = canvas.width;
   const floorSizeY = canvas.height;
   const floor = document.createElement("img");
-  floor.src = "../assets/images/stage.jpg";
+
+  if (currentLevel === 1) {
+    floor.src = "../assets/images/stage.jpg";
+  } else if (currentLevel === 2) {
+    floor.src = "../assets/images/stage-level2.png";
+  }
+
   context.drawImage(floor, floorX, floorY, floorSizeX, floorSizeY);
+
 };
 
 const drawEnemy = () => {
@@ -156,13 +167,7 @@ const attackEnemy = () => {
 
 const platform = () => {
   const platform = document.createElement("img");
-
   platform.src = "../assets/images/platform.png";
-
-  let platformX = 500;
-  let platformY = 500;
-  const platformWidth = 500;
-  const platformHeight = 150;
   const range = 150;
   const PLATFORM_OFFSET_Y = 98;
 
@@ -209,6 +214,59 @@ const collectPotions = () => {
   }
 };
 
+const changeLevel = () => {
+
+  currentLevel++;
+
+  player.x = 0;
+  player.y = groundLevel;
+
+  isVisible = true;
+  isPotionVisible = true;
+
+
+  if (currentLevel === 2) {
+    isPotionVisible = false;
+    enemyX = 650;
+    enemyY = 410
+    velocity = 1;
+    limitLeft = 640;
+    limitRight = 700;
+  }
+}
+
+const newPlatform = () => {
+  const newPlatform = document.createElement("img");
+  newPlatform.src = "../assets/images/platform.png";
+  let newPlatformX = 900;
+  let newPlatformY = 300;
+  const newPlatformWidth = 500;
+  const newPlatformHeight = 500;
+  const range = 155;
+  const PLATFORM_OFFSET_Y = 98;
+
+  context.drawImage(
+    newPlatform,
+    newPlatformX,
+    newPlatformY,
+    newPlatformWidth,
+    platformHeight
+  );
+  
+  if (
+    player.x < newPlatformX + newPlatformWidth - range  &&
+    player.x + player.width - range > newPlatformX &&
+    player.y + player.height > newPlatformY &&
+    player.y + player.height < newPlatformY + newPlatformHeight &&
+    velocityY >= 0
+  ) {
+    player.y = newPlatformY - player.height + PLATFORM_OFFSET_Y;
+    velocityY = 0;
+    isOnGround = true;
+  }
+}
+
+
 function update() {
   const sprite = document.createElement("img");
   sprite.src = "../assets/images/sprite-geralt.png";
@@ -225,6 +283,10 @@ function update() {
   context.clearRect(0, 0, canvas.width, canvas.height);
   drawEscenary();
   platform();
+
+  if (currentLevel === 2) {
+    newPlatform();
+  }
   collectPotions();
   drawHealthBar();
   countPotions();
@@ -232,8 +294,8 @@ function update() {
   attackEnemy();
   context.drawImage(sprite, player.x, player.y, player.width, player.height);
 
-   if (player.x + player.width > canvas.width) {
-    player.x = 0
+  if (player.x + player.width > canvas.width) {
+    changeLevel();
   }
 
   requestAnimationFrame(update);
