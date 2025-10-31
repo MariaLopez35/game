@@ -28,14 +28,31 @@ let limitLeft = 1100;
 let velocity = 2;
 let platformX = 500;
 let platformY = 500;
-const platformWidth = 500;
-const platformHeight = 150;
+let platformWidth = 500;
+let platformHeight = 150;
 let pressKey = 0;
 let isVisible = true;
 let pressN = true;
 let isPotionVisible = true;
 let potionCount = 3;
 let currentLevel = 1;
+let enemyFinalX = 1200;
+let enemyFinalY = groundLevel - 10;
+const enemyFinalWidth = 196;
+const enemyFinalHeight = 196;
+let enemyFinalSpeed = 2;
+let isEnemyFinalActive = false;
+let isFinalEnemyVisible = true;
+let pressKeyFinal = 0;
+let pressNFinal = true;
+const hitsToKillFinal = 5;
+let playerHealth = 100;
+const maxHealth = 100;
+const damageEnemy = 10;
+const damageFinalEnemy = 20;
+const healAmount = 30;
+let canTakeDamage = true;
+const damageCooldown = 500;
 
 const keys = {
   ArrowRight: false,
@@ -56,8 +73,14 @@ const drawHealthBar = () => {
   heart.src = "../assets/images/heart.png";
 
   context.drawImage(heart, heartX, heartY, heartSize, heartSize);
-  context.fillStyle = "green";
-  context.fillRect(healthBarX, healthBarY, healthBarWidth, healthBarHeight);
+
+  const currentHealthWidth = (playerHealth / maxHealth) * healthBarWidth;
+
+  if (playerHealth > 60) context.fillStyle = "green";
+  else if (playerHealth > 30) context.fillStyle = "yellow";
+  else context.fillStyle = "red";
+
+  context.fillRect(healthBarX, healthBarY, currentHealthWidth, healthBarHeight);
 };
 
 const countPotions = () => {
@@ -103,12 +126,15 @@ const drawEscenary = () => {
 
   if (currentLevel === 1) {
     floor.src = "../assets/images/stage.jpg";
-  } else if (currentLevel === 2) {
+  }
+  if (currentLevel === 2) {
     floor.src = "../assets/images/stage-level2.png";
+  }
+  if (currentLevel === 3) {
+    floor.src = "../assets/images/level3.png";
   }
 
   context.drawImage(floor, floorX, floorY, floorSizeX, floorSizeY);
-
 };
 
 const drawEnemy = () => {
@@ -145,9 +171,16 @@ const attackEnemy = () => {
     player.x < enemyX + enemyWidth &&
     player.x + player.width > enemyX &&
     player.y < enemyY + enemyHeight &&
-    player.x + player.height > enemyY
+    player.y + player.height > enemyY
   ) {
     player.x = enemyX - enemyWidth;
+
+    if (!keys.KeyN && canTakeDamage) {
+      playerHealth -= damageEnemy;
+      if (playerHealth < 0) playerHealth = 0;
+      canTakeDamage = false;
+      setTimeout(() => (canTakeDamage = true), damageCooldown);
+    }
 
     if (keys.KeyN && pressN) {
       pressKey++;
@@ -215,7 +248,7 @@ const collectPotions = () => {
 };
 
 const changeLevel = () => {
-
+  playerHealth = maxHealth;
   currentLevel++;
 
   player.x = 0;
@@ -224,16 +257,24 @@ const changeLevel = () => {
   isVisible = true;
   isPotionVisible = true;
 
-
   if (currentLevel === 2) {
     isPotionVisible = false;
     enemyX = 650;
-    enemyY = 410
+    enemyY = 410;
     velocity = 1;
     limitLeft = 640;
     limitRight = 700;
   }
-}
+
+  if (currentLevel === 3) {
+    isVisible = false;
+    isPotionVisible = false;
+    platformX = 0;
+    platformY = 0;
+    platformWidth = 0;
+    platformHeight = 0;
+  }
+};
 
 const newPlatform = () => {
   const newPlatform = document.createElement("img");
@@ -252,9 +293,9 @@ const newPlatform = () => {
     newPlatformWidth,
     platformHeight
   );
-  
+
   if (
-    player.x < newPlatformX + newPlatformWidth - range  &&
+    player.x < newPlatformX + newPlatformWidth - range &&
     player.x + player.width - range > newPlatformX &&
     player.y + player.height > newPlatformY &&
     player.y + player.height < newPlatformY + newPlatformHeight &&
@@ -264,8 +305,92 @@ const newPlatform = () => {
     velocityY = 0;
     isOnGround = true;
   }
-}
+};
 
+const attackFinalEnemy = () => {
+  if (!isFinalEnemyVisible) return;
+
+  if (
+    player.x < enemyFinalX + enemyFinalWidth &&
+    player.x + player.width > enemyFinalX &&
+    player.y < enemyFinalY + enemyFinalHeight &&
+    player.y + player.height > enemyFinalY
+  ) {
+    if (player.x < enemyFinalX) {
+      player.x = enemyFinalX - player.width;
+    } else {
+      player.x = enemyFinalX + enemyFinalWidth;
+    }
+
+    if (!keys.KeyN && canTakeDamage) {
+      playerHealth -= damageFinalEnemy;
+      if (playerHealth < 0) playerHealth = 0;
+      canTakeDamage = false;
+      setTimeout(() => (canTakeDamage = true), damageCooldown);
+    }
+
+    if (keys.KeyN && pressNFinal) {
+      pressKeyFinal++;
+      pressNFinal = false;
+    }
+
+    if (pressKeyFinal === hitsToKillFinal) {
+      isFinalEnemyVisible = false;
+      pressKeyFinal = 0;
+    }
+  }
+
+  if (!keys.KeyN) {
+    pressNFinal = true;
+  }
+};
+
+const finalEnemy = () => {
+  const enemyFinal = document.createElement("img");
+  enemyFinal.src = "../assets/images/final-enemy.png";
+
+  if (!isFinalEnemyVisible) {
+    return;
+  }
+
+  context.drawImage(
+    enemyFinal,
+    enemyFinalX,
+    enemyFinalY,
+    enemyFinalWidth,
+    enemyFinalHeight
+  );
+
+  const distance = Math.abs(player.x - enemyFinalX);
+
+  if (distance < 800) {
+    isEnemyFinalActive = true;
+  }
+
+  if (isEnemyFinalActive) {
+    if (player.x > enemyFinalX) {
+      enemyFinalX += enemyFinalSpeed;
+    } else if (player.x < enemyFinalX) {
+      enemyFinalX -= enemyFinalSpeed;
+    }
+  }
+
+  if (enemyFinalX < 0) {
+    enemyFinalX = 0;
+  }
+  if (enemyFinalX + enemyFinalWidth > canvas.width) {
+    enemyFinalX = canvas.width - enemyFinalWidth;
+  }
+};
+
+const healWithPotion = () => {
+  if (keys.KeyM && potionCount > 0 && playerHealth < maxHealth) {
+    playerHealth += healAmount;
+    potionCount--;
+    if (playerHealth > maxHealth) playerHealth = maxHealth;
+    keys.KeyM = false;
+  }
+};
 
 function update() {
   const sprite = document.createElement("img");
@@ -291,12 +416,20 @@ function update() {
   drawHealthBar();
   countPotions();
   drawEnemy();
+  if (currentLevel === 3) {
+    finalEnemy();
+  }
   attackEnemy();
+  if (currentLevel === 3) {
+    attackFinalEnemy();
+  }
   context.drawImage(sprite, player.x, player.y, player.width, player.height);
 
   if (player.x + player.width > canvas.width) {
     changeLevel();
   }
+
+  healWithPotion();
 
   requestAnimationFrame(update);
 }
@@ -310,4 +443,3 @@ window.addEventListener("keyup", (event) => {
 });
 
 update();
-
