@@ -15,37 +15,46 @@ const playerSpeed = 5;
 const groundOffset = 120;
 const groundLevel = canvas.height - player.height - groundOffset;
 player.y = groundLevel;
+
 let velocityY = 0;
 const gravity = 0.8;
 const jumpSpeed = -20;
 let isOnGround = false;
-let enemyX = 1200;
-let enemyY = groundLevel;
-const enemyWidth = 196;
-const enemyHeight = 196;
-let limitRight = 1400;
-let limitLeft = 1100;
-let velocity = 2;
+
+const enemy = {
+  x: 1200,
+  y: groundLevel,
+  width: 196,
+  height: 196,
+  limitRight: 1400,
+  limitLeft: 1100,
+  velocity: 2,
+  visible: true,
+  pressKey: 0,
+  pressN: true,
+};
+
+const finalEnemy = {
+  x: 1200,
+  y: groundLevel - 10,
+  width: 196,
+  height: 196,
+  speed: 2,
+  active: false,
+  visible: true,
+  pressKey: 0,
+  pressN: true,
+  hitsToKill: 5,
+};
+
 let platformX = 500;
 let platformY = 500;
 let platformWidth = 500;
 let platformHeight = 150;
-let pressKey = 0;
-let isVisible = true;
-let pressN = true;
 let isPotionVisible = true;
 let potionCount = 3;
 let currentLevel = 1;
-let enemyFinalX = 1200;
-let enemyFinalY = groundLevel - 10;
-const enemyFinalWidth = 196;
-const enemyFinalHeight = 196;
-let enemyFinalSpeed = 2;
-let isEnemyFinalActive = false;
-let isFinalEnemyVisible = true;
-let pressKeyFinal = 0;
-let pressNFinal = true;
-const hitsToKillFinal = 5;
+
 let playerHealth = 100;
 const maxHealth = 100;
 const damageEnemy = 10;
@@ -59,9 +68,23 @@ const keys = {
   ArrowLeft: false,
   Space: false,
   KeyN: false,
+  KeyM: false,
 };
 
-const drawHealthBar = () => {
+const levelBackgrounds = {
+  1: "../assets/images/stage.jpg",
+  2: "../assets/images/stage-level2.png",
+  3: "../assets/images/level3.png",
+};
+
+let currentBackground = document.createElement("img");
+currentBackground.src = levelBackgrounds[currentLevel];
+
+function drawEscenary() {
+  context.drawImage(currentBackground, 0, 0, canvas.width, canvas.height);
+}
+
+function drawHealthBar() {
   let healthBarX = 1690;
   let healthBarY = 30;
   const healthBarWidth = 200;
@@ -76,20 +99,25 @@ const drawHealthBar = () => {
 
   const currentHealthWidth = (playerHealth / maxHealth) * healthBarWidth;
 
-  if (playerHealth > 60) context.fillStyle = "green";
-  else if (playerHealth > 30) context.fillStyle = "yellow";
-  else context.fillStyle = "red";
+  if (playerHealth > 60) {
+    context.fillStyle = "green";
+  } else if (playerHealth > 30) {
+    context.fillStyle = "yellow";
+  } else {
+    context.fillStyle = "red";
+  }
 
   context.fillRect(healthBarX, healthBarY, currentHealthWidth, healthBarHeight);
-};
+}
 
-const countPotions = () => {
+function countPotions() {
   let potionsX = 1790;
   let potionsY = 60;
   const potionsSize = 50;
   const padding = 12;
   const potions = document.createElement("img");
   potions.src = "../assets/images/potion.png";
+
   context.drawImage(potions, potionsX, potionsY, potionsSize, potionsSize);
 
   context.font = "30px Arial";
@@ -99,9 +127,9 @@ const countPotions = () => {
     potionsX + potionsSize,
     potionsY + potionsSize - padding
   );
-};
+}
 
-const jump = () => {
+function jump() {
   if (isOnGround && keys.Space) {
     velocityY = jumpSpeed;
     isOnGround = false;
@@ -115,102 +143,80 @@ const jump = () => {
     velocityY = 0;
     isOnGround = true;
   }
-};
+}
 
-const drawEscenary = () => {
-  let floorX = 0;
-  let floorY = 0;
-  const floorSizeX = canvas.width;
-  const floorSizeY = canvas.height;
-  const floor = document.createElement("img");
+function drawEnemy() {
+  const enemyImg = document.createElement("img");
+  enemyImg.src = "../assets/images/enemy.png";
 
-  if (currentLevel === 1) {
-    floor.src = "../assets/images/stage.jpg";
-  }
-  if (currentLevel === 2) {
-    floor.src = "../assets/images/stage-level2.png";
-  }
-  if (currentLevel === 3) {
-    floor.src = "../assets/images/level3.png";
-  }
-
-  context.drawImage(floor, floorX, floorY, floorSizeX, floorSizeY);
-};
-
-const drawEnemy = () => {
-  const enemy = document.createElement("img");
-  enemy.src = "../assets/images/enemy.png";
-
-  if (isVisible) {
-    context.drawImage(enemy, enemyX, enemyY, enemyWidth, enemyHeight);
-  } else {
+  if (!enemy.visible) {
     return;
   }
 
-  enemyX += velocity;
+  context.drawImage(enemyImg, enemy.x, enemy.y, enemy.width, enemy.height);
 
-  if (enemyX > limitRight) {
-    enemyX = limitRight;
-    velocity = -velocity;
+  enemy.x += enemy.velocity;
+
+  if (enemy.x > enemy.limitRight) {
+    enemy.x = enemy.limitRight;
+    enemy.velocity = -enemy.velocity;
   }
 
-  if (enemyX < limitLeft) {
-    enemyX = limitLeft;
-    velocity = -velocity;
+  if (enemy.x < enemy.limitLeft) {
+    enemy.x = enemy.limitLeft;
+    enemy.velocity = -enemy.velocity;
   }
-};
+}
 
-const attackEnemy = () => {
+function attackEnemy() {
   const numberOfTimes = 3;
 
-  if (!isVisible) {
+  if (!enemy.visible) {
     return;
   }
 
   if (
-    player.x < enemyX + enemyWidth &&
-    player.x + player.width > enemyX &&
-    player.y < enemyY + enemyHeight &&
-    player.y + player.height > enemyY
+    player.x < enemy.x + enemy.width &&
+    player.x + player.width > enemy.x &&
+    player.y < enemy.y + enemy.height &&
+    player.y + player.height > enemy.y
   ) {
-    player.x = enemyX - enemyWidth;
+    player.x = enemy.x - enemy.width;
 
     if (!keys.KeyN && canTakeDamage) {
       playerHealth -= damageEnemy;
-      if (playerHealth < 0) playerHealth = 0;
+      if (playerHealth < 0) {
+        playerHealth = 0;
+      }
       canTakeDamage = false;
-      setTimeout(() => (canTakeDamage = true), damageCooldown);
+      setTimeout(() => {
+        canTakeDamage = true;
+      }, damageCooldown);
     }
 
-    if (keys.KeyN && pressN) {
-      pressKey++;
-      pressN = false;
+    if (keys.KeyN && enemy.pressN) {
+      enemy.pressKey++;
+      enemy.pressN = false;
     }
 
-    if (pressKey === numberOfTimes) {
-      isVisible = false;
-      pressKey = 0;
+    if (enemy.pressKey === numberOfTimes) {
+      enemy.visible = false;
+      enemy.pressKey = 0;
     }
   }
 
   if (!keys.KeyN) {
-    pressN = true;
+    enemy.pressN = true;
   }
-};
+}
 
-const platform = () => {
+function platform() {
   const platform = document.createElement("img");
   platform.src = "../assets/images/platform.png";
   const range = 150;
   const PLATFORM_OFFSET_Y = 98;
 
-  context.drawImage(
-    platform,
-    platformX,
-    platformY,
-    platformWidth,
-    platformHeight
-  );
+  context.drawImage(platform, platformX, platformY, platformWidth, platformHeight);
 
   if (
     player.x < platformX + platformWidth - range &&
@@ -223,9 +229,9 @@ const platform = () => {
     velocityY = 0;
     isOnGround = true;
   }
-};
+}
 
-const collectPotions = () => {
+function collectPotions() {
   let potionsX = 780;
   let potionsY = 500;
   const potionsSize = 90;
@@ -245,38 +251,40 @@ const collectPotions = () => {
       potionCount++;
     }
   }
-};
+}
 
-const changeLevel = () => {
+function changeLevel() {
   playerHealth = maxHealth;
   currentLevel++;
 
   player.x = 0;
   player.y = groundLevel;
 
-  isVisible = true;
+  enemy.visible = true;
   isPotionVisible = true;
+
+  currentBackground.src = levelBackgrounds[currentLevel] || levelBackgrounds[1];
 
   if (currentLevel === 2) {
     isPotionVisible = false;
-    enemyX = 650;
-    enemyY = 410;
-    velocity = 1;
-    limitLeft = 640;
-    limitRight = 700;
+    enemy.x = 650;
+    enemy.y = 410;
+    enemy.velocity = 1;
+    enemy.limitLeft = 640;
+    enemy.limitRight = 700;
   }
 
   if (currentLevel === 3) {
-    isVisible = false;
+    enemy.visible = false;
     isPotionVisible = false;
     platformX = 0;
     platformY = 0;
     platformWidth = 0;
     platformHeight = 0;
   }
-};
+}
 
-const newPlatform = () => {
+function newPlatform() {
   const newPlatform = document.createElement("img");
   newPlatform.src = "../assets/images/platform.png";
   let newPlatformX = 900;
@@ -286,13 +294,7 @@ const newPlatform = () => {
   const range = 155;
   const PLATFORM_OFFSET_Y = 98;
 
-  context.drawImage(
-    newPlatform,
-    newPlatformX,
-    newPlatformY,
-    newPlatformWidth,
-    platformHeight
-  );
+  context.drawImage(newPlatform, newPlatformX, newPlatformY, newPlatformWidth, platformHeight);
 
   if (
     player.x < newPlatformX + newPlatformWidth - range &&
@@ -305,92 +307,95 @@ const newPlatform = () => {
     velocityY = 0;
     isOnGround = true;
   }
-};
+}
 
-const attackFinalEnemy = () => {
-  if (!isFinalEnemyVisible) return;
+function drawFinalEnemy() {
+  const enemyImg = document.createElement("img");
+  enemyImg.src = "../assets/images/final-enemy.png";
+
+  if (!finalEnemy.visible) {
+    return;
+  }
+
+  context.drawImage(enemyImg, finalEnemy.x, finalEnemy.y, finalEnemy.width, finalEnemy.height);
+
+  const distance = Math.abs(player.x - finalEnemy.x);
+
+  if (distance < 800) {
+    finalEnemy.active = true;
+  }
+
+  if (finalEnemy.active) {
+    if (player.x > finalEnemy.x) {
+      finalEnemy.x += finalEnemy.speed;
+    } else if (player.x < finalEnemy.x) {
+      finalEnemy.x -= finalEnemy.speed;
+    }
+  }
+
+  if (finalEnemy.x < 0) {
+    finalEnemy.x = 0;
+  }
+
+  if (finalEnemy.x + finalEnemy.width > canvas.width) {
+    finalEnemy.x = canvas.width - finalEnemy.width;
+  }
+}
+
+function attackFinalEnemy() {
+  if (!finalEnemy.visible) {
+    return;
+  }
 
   if (
-    player.x < enemyFinalX + enemyFinalWidth &&
-    player.x + player.width > enemyFinalX &&
-    player.y < enemyFinalY + enemyFinalHeight &&
-    player.y + player.height > enemyFinalY
+    player.x < finalEnemy.x + finalEnemy.width &&
+    player.x + player.width > finalEnemy.x &&
+    player.y < finalEnemy.y + finalEnemy.height &&
+    player.y + player.height > finalEnemy.y
   ) {
-    if (player.x < enemyFinalX) {
-      player.x = enemyFinalX - player.width;
+    if (player.x < finalEnemy.x) {
+      player.x = finalEnemy.x - player.width;
     } else {
-      player.x = enemyFinalX + enemyFinalWidth;
+      player.x = finalEnemy.x + finalEnemy.width;
     }
 
     if (!keys.KeyN && canTakeDamage) {
       playerHealth -= damageFinalEnemy;
-      if (playerHealth < 0) playerHealth = 0;
+      if (playerHealth < 0) {
+        playerHealth = 0;
+      }
       canTakeDamage = false;
-      setTimeout(() => (canTakeDamage = true), damageCooldown);
+      setTimeout(() => {
+        canTakeDamage = true;
+      }, damageCooldown);
     }
 
-    if (keys.KeyN && pressNFinal) {
-      pressKeyFinal++;
-      pressNFinal = false;
+    if (keys.KeyN && finalEnemy.pressN) {
+      finalEnemy.pressKey++;
+      finalEnemy.pressN = false;
     }
 
-    if (pressKeyFinal === hitsToKillFinal) {
-      isFinalEnemyVisible = false;
-      pressKeyFinal = 0;
+    if (finalEnemy.pressKey === finalEnemy.hitsToKill) {
+      finalEnemy.visible = false;
+      finalEnemy.pressKey = 0;
     }
   }
 
   if (!keys.KeyN) {
-    pressNFinal = true;
+    finalEnemy.pressN = true;
   }
-};
+}
 
-const finalEnemy = () => {
-  const enemyFinal = document.createElement("img");
-  enemyFinal.src = "../assets/images/final-enemy.png";
-
-  if (!isFinalEnemyVisible) {
-    return;
-  }
-
-  context.drawImage(
-    enemyFinal,
-    enemyFinalX,
-    enemyFinalY,
-    enemyFinalWidth,
-    enemyFinalHeight
-  );
-
-  const distance = Math.abs(player.x - enemyFinalX);
-
-  if (distance < 800) {
-    isEnemyFinalActive = true;
-  }
-
-  if (isEnemyFinalActive) {
-    if (player.x > enemyFinalX) {
-      enemyFinalX += enemyFinalSpeed;
-    } else if (player.x < enemyFinalX) {
-      enemyFinalX -= enemyFinalSpeed;
-    }
-  }
-
-  if (enemyFinalX < 0) {
-    enemyFinalX = 0;
-  }
-  if (enemyFinalX + enemyFinalWidth > canvas.width) {
-    enemyFinalX = canvas.width - enemyFinalWidth;
-  }
-};
-
-const healWithPotion = () => {
+function healWithPotion() {
   if (keys.KeyM && potionCount > 0 && playerHealth < maxHealth) {
     playerHealth += healAmount;
     potionCount--;
-    if (playerHealth > maxHealth) playerHealth = maxHealth;
+    if (playerHealth > maxHealth) {
+      playerHealth = maxHealth;
+    }
     keys.KeyM = false;
   }
-};
+}
 
 function update() {
   const sprite = document.createElement("img");
@@ -399,6 +404,7 @@ function update() {
   if (keys.ArrowRight) {
     player.x += playerSpeed;
   }
+
   if (keys.ArrowLeft) {
     player.x -= playerSpeed;
   }
@@ -406,23 +412,29 @@ function update() {
   jump();
 
   context.clearRect(0, 0, canvas.width, canvas.height);
+
   drawEscenary();
   platform();
 
   if (currentLevel === 2) {
     newPlatform();
   }
+
   collectPotions();
   drawHealthBar();
   countPotions();
   drawEnemy();
+
   if (currentLevel === 3) {
-    finalEnemy();
+    drawFinalEnemy();
   }
+
   attackEnemy();
+
   if (currentLevel === 3) {
     attackFinalEnemy();
   }
+
   context.drawImage(sprite, player.x, player.y, player.width, player.height);
 
   if (player.x + player.width > canvas.width) {
